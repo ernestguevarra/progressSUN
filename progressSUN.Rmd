@@ -18,14 +18,14 @@ classoption: a4paper
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache = TRUE)
+options(width = 100, dplyr.width = 100)
 devtools::install_github("ernestguevarra/scalingupnutrition")
 library(scalingupnutrition)
 library(tidyverse)
 library(tidytext)
+theme_set(theme_light())
 ```
-
-
 
 ## Re-structure dataset into a one-token-per-row format
 
@@ -89,4 +89,39 @@ progress_sentiment <- tidy_reports %>%
 ggplot(progress_sentiment, aes(index, sentiment, fill = year)) +
   geom_col(show.legend = FALSE) +
   facet_wrap(~year, ncol = 2, scales = "free_x")
+```
+
+```{r, eval = TRUE}
+report_2011 <- tidy_reports %>% 
+  filter(year == 2011)
+
+report_2011
+```
+
+```{r, eval = TRUE}
+afinn <- report_2011 %>% 
+  inner_join(get_sentiments("afinn")) %>% 
+  group_by(index = linenumber %/% 80) %>% 
+  summarise(sentiment = sum(score)) %>% 
+  mutate(method = "AFINN")
+
+bing_and_nrc <- bind_rows(report_2011 %>% 
+                            inner_join(get_sentiments("bing")) %>%
+                            mutate(method = "Bing et al."),
+                          report_2011 %>% 
+                            inner_join(get_sentiments("nrc") %>% 
+                                         filter(sentiment %in% c("positive", 
+                                                                 "negative"))) %>%
+                            mutate(method = "NRC")) %>%
+  count(method, index = linenumber %/% 80, sentiment) %>%
+  spread(sentiment, n, fill = 0) %>%
+  mutate(sentiment = positive - negative)
+```
+
+```{r, eval = TRUE, fig.height = 10}
+bind_rows(afinn, 
+          bing_and_nrc) %>%
+  ggplot(aes(index, sentiment, fill = method)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~method, ncol = 1, scales = "free_y")
 ```
