@@ -11,3 +11,5 @@ stringr
 forcats
 tidytext
 bindrcpp
+RColorBrewer
+wordcloud

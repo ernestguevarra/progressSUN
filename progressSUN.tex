@@ -251,7 +251,8 @@ words}\label{visualise-the-most-common-words}}
 \begin{Highlighting}[]
 \NormalTok{progress_sentiment <-}\StringTok{ }\NormalTok{tidy_reports }\OperatorTok{%>%}
 \StringTok{  }\KeywordTok{inner_join}\NormalTok{(}\KeywordTok{get_sentiments}\NormalTok{(}\StringTok{"bing"}\NormalTok{)) }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{count}\NormalTok{(year, }\DataTypeTok{index =}\NormalTok{ linenumber }\OperatorTok{%/%}\StringTok{ }\DecValTok{80}\NormalTok{, sentiment) }\OperatorTok{%>%}
+\StringTok{  }\CommentTok{#count(year, index = linenumber %/% 80, sentiment) %>%}
+\StringTok{  }\KeywordTok{count}\NormalTok{(year, }\DataTypeTok{index =}\NormalTok{ page, sentiment) }\OperatorTok{%>%}
 \StringTok{  }\KeywordTok{spread}\NormalTok{(sentiment, n, }\DataTypeTok{fill =} \DecValTok{0}\NormalTok{) }\OperatorTok{%>%}
 \StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{sentiment =}\NormalTok{ positive }\OperatorTok{-}\StringTok{ }\NormalTok{negative)}
 \end{Highlighting}
@@ -297,7 +298,8 @@ words}\label{visualise-the-most-common-words}}
 \begin{Highlighting}[]
 \NormalTok{afinn <-}\StringTok{ }\NormalTok{report_}\DecValTok{2011} \OperatorTok{%>%}\StringTok{ }
 \StringTok{  }\KeywordTok{inner_join}\NormalTok{(}\KeywordTok{get_sentiments}\NormalTok{(}\StringTok{"afinn"}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }
-\StringTok{  }\KeywordTok{group_by}\NormalTok{(}\DataTypeTok{index =}\NormalTok{ linenumber }\OperatorTok{%/%}\StringTok{ }\DecValTok{80}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\CommentTok{#group_by(index = linenumber %/% 80) %>%}
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(}\DataTypeTok{index =}\NormalTok{ page) }\OperatorTok{%>%}
 \StringTok{  }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{sentiment =} \KeywordTok{sum}\NormalTok{(score)) }\OperatorTok{%>%}\StringTok{ }
 \StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{method =} \StringTok{"AFINN"}\NormalTok{)}
 
@@ -309,7 +311,8 @@ words}\label{visualise-the-most-common-words}}
 \StringTok{                                         }\KeywordTok{filter}\NormalTok{(sentiment }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"positive"}\NormalTok{, }
                                                                  \StringTok{"negative"}\NormalTok{))) }\OperatorTok{%>%}
 \StringTok{                            }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{method =} \StringTok{"NRC"}\NormalTok{)) }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{count}\NormalTok{(method, }\DataTypeTok{index =}\NormalTok{ linenumber }\OperatorTok{%/%}\StringTok{ }\DecValTok{80}\NormalTok{, sentiment) }\OperatorTok{%>%}
+\StringTok{  }\CommentTok{#count(method, index = linenumber %/% 80, sentiment) %>%}
+\StringTok{  }\KeywordTok{count}\NormalTok{(method, }\DataTypeTok{index =}\NormalTok{ page, sentiment) }\OperatorTok{%>%}
 \StringTok{  }\KeywordTok{spread}\NormalTok{(sentiment, n, }\DataTypeTok{fill =} \DecValTok{0}\NormalTok{) }\OperatorTok{%>%}
 \StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{sentiment =}\NormalTok{ positive }\OperatorTok{-}\StringTok{ }\NormalTok{negative)}
 \end{Highlighting}
@@ -326,6 +329,65 @@ words}\label{visualise-the-most-common-words}}
 \end{Shaded}
 
 \includegraphics{progressSUN_files/figure-latex/unnamed-chunk-10-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{bing_word_counts <-}\StringTok{ }\NormalTok{tidy_reports }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{inner_join}\NormalTok{(}\KeywordTok{get_sentiments}\NormalTok{(}\StringTok{"bing"}\NormalTok{)) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{count}\NormalTok{(word, sentiment, }\DataTypeTok{sort =} \OtherTok{TRUE}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{ungroup}\NormalTok{()}
+
+\NormalTok{bing_word_counts}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 743 x 3
+##    word       sentiment     n
+##    <chr>      <chr>     <int>
+##  1 progress   positive   1308
+##  2 support    positive    969
+##  3 sensitive  positive    340
+##  4 commitment positive    250
+##  5 coherent   positive    244
+##  6 effective  positive    233
+##  7 improve    positive    224
+##  8 overweight negative    196
+##  9 protection positive    195
+## 10 lead       positive    192
+## # ... with 733 more rows
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{bing_word_counts }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(sentiment) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{top_n}\NormalTok{(}\DecValTok{10}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{ungroup}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{word =} \KeywordTok{reorder}\NormalTok{(word, n)) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{aes}\NormalTok{(word, n, }\DataTypeTok{fill =}\NormalTok{ sentiment)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_col}\NormalTok{(}\DataTypeTok{show.legend =} \OtherTok{FALSE}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\NormalTok{sentiment, }\DataTypeTok{scales =} \StringTok{"free_y"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{y =} \StringTok{"Contribution to sentiment"}\NormalTok{,}
+       \DataTypeTok{x =} \OtherTok{NULL}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{coord_flip}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{progressSUN_files/figure-latex/unnamed-chunk-12-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(wordcloud)}
+
+\NormalTok{tidy_reports }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{anti_join}\NormalTok{(stop_words) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{count}\NormalTok{(word) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{with}\NormalTok{(}\KeywordTok{wordcloud}\NormalTok{(word, n, }\DataTypeTok{max.words =} \DecValTok{100}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{progressSUN_files/figure-latex/unnamed-chunk-13-1.pdf}
 
 
 \end{document}
