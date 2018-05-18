@@ -222,5 +222,62 @@ words}\label{visualise-the-most-common-words}}
 
 \includegraphics{progressSUN_files/figure-latex/unnamed-chunk-4-1.pdf}
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nrc_joy <-}\StringTok{ }\KeywordTok{get_sentiments}\NormalTok{(}\StringTok{"nrc"}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{filter}\NormalTok{(sentiment }\OperatorTok{==}\StringTok{ "joy"}\NormalTok{)}
+
+\NormalTok{tidy_reports }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{filter}\NormalTok{(year }\OperatorTok{==}\StringTok{ }\DecValTok{2011}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{inner_join}\NormalTok{(nrc_joy) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{count}\NormalTok{(word, }\DataTypeTok{sort =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Joining, by = "word"
+\end{verbatim}
+
+\begin{verbatim}
+## # A tibble: 62 x 2
+##    word            n
+##    <chr>       <int>
+##  1 sun           236
+##  2 food          105
+##  3 progress       72
+##  4 child          35
+##  5 resources      30
+##  6 weight         19
+##  7 birth          18
+##  8 improve        17
+##  9 established    15
+## 10 engaged        13
+## # ... with 52 more rows
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{progress_sentiment <-}\StringTok{ }\NormalTok{tidy_reports }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{inner_join}\NormalTok{(}\KeywordTok{get_sentiments}\NormalTok{(}\StringTok{"bing"}\NormalTok{)) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{count}\NormalTok{(year, }\DataTypeTok{index =}\NormalTok{ linenumber }\OperatorTok{%/%}\StringTok{ }\DecValTok{80}\NormalTok{, sentiment) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{spread}\NormalTok{(sentiment, n, }\DataTypeTok{fill =} \DecValTok{0}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{sentiment =}\NormalTok{ positive }\OperatorTok{-}\StringTok{ }\NormalTok{negative)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Joining, by = "word"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(progress_sentiment, }\KeywordTok{aes}\NormalTok{(index, sentiment, }\DataTypeTok{fill =}\NormalTok{ year)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_col}\NormalTok{(}\DataTypeTok{show.legend =} \OtherTok{FALSE}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\NormalTok{year, }\DataTypeTok{ncol =} \DecValTok{2}\NormalTok{, }\DataTypeTok{scales =} \StringTok{"free_x"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{progressSUN_files/figure-latex/unnamed-chunk-7-1.pdf}
+
 
 \end{document}

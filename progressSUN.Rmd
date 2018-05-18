@@ -29,7 +29,7 @@ library(tidytext)
 
 ## Re-structure dataset into a one-token-per-row format
 
-```{r, messages = FALSE, eval = TRUE}
+```{r, eval = TRUE}
 tidy_reports <- progress_reports() %>%
   unnest_tokens(word, text)
   
@@ -39,7 +39,7 @@ tidy_reports
 
 ## Remove stop words - words not useful in analysis
 
-```{r, messages = FALSE, eval = TRUE}
+```{r, eval = TRUE}
 data(stop_words)
 
 tidy_reports <- tidy_reports %>%
@@ -49,14 +49,14 @@ tidy_reports <- tidy_reports %>%
 
 ## Find the most common words in all the reports as a whole
 
-```{r, messages = FALSE, eval = TRUE}
+```{r, eval = TRUE}
 tidy_reports %>%
   count(word, sort = TRUE)
 ```
 
 ## Visualise the most common words
 
-```{r, messages = FALSE, eval = TRUE}
+```{r, eval = TRUE}
 tidy_reports %>%
   count(word, sort = TRUE) %>%
   filter(n > 600) %>%
@@ -67,3 +67,26 @@ tidy_reports %>%
   coord_flip()
 ```
 
+```{r, eval = TRUE}
+nrc_joy <- get_sentiments("nrc") %>% 
+  filter(sentiment == "joy")
+
+tidy_reports %>%
+  filter(year == 2011) %>%
+  inner_join(nrc_joy) %>%
+  count(word, sort = TRUE)
+```
+
+```{r, eval = TRUE}
+progress_sentiment <- tidy_reports %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(year, index = linenumber %/% 80, sentiment) %>%
+  spread(sentiment, n, fill = 0) %>%
+  mutate(sentiment = positive - negative)
+```
+
+```{r, eval = TRUE, fig.height = 10}
+ggplot(progress_sentiment, aes(index, sentiment, fill = year)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~year, ncol = 2, scales = "free_x")
+```
