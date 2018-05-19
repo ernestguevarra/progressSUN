@@ -13,3 +13,4 @@ tidytext
 bindrcpp
 RColorBrewer
 wordcloud
+reshape2

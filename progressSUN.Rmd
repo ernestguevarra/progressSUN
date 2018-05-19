@@ -161,3 +161,19 @@ tidy_reports %>%
   count(word) %>%
   with(wordcloud(word, n, max.words = 100))
 ```
+
+```{r, eval = TRUE}
+library(reshape2)
+
+tidy_reports %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(word, sentiment, sort = TRUE) %>%
+  acast(word ~ sentiment, value.var = "n", fill = 0) %>%
+  comparison.cloud(colors = c("gray20", "gray80"),
+                   max.words = 100)
+```
+
+```{r, eval = TRUE}
+report1_sentences <- progress_report_2011 %>% 
+  unnest_tokens(sentence, text, token = "sentences")
+```

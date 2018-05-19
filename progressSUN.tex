@@ -389,5 +389,26 @@ words}\label{visualise-the-most-common-words}}
 
 \includegraphics{progressSUN_files/figure-latex/unnamed-chunk-13-1.pdf}
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(reshape2)}
+
+\NormalTok{tidy_reports }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{inner_join}\NormalTok{(}\KeywordTok{get_sentiments}\NormalTok{(}\StringTok{"bing"}\NormalTok{)) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{count}\NormalTok{(word, sentiment, }\DataTypeTok{sort =} \OtherTok{TRUE}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{acast}\NormalTok{(word }\OperatorTok{~}\StringTok{ }\NormalTok{sentiment, }\DataTypeTok{value.var =} \StringTok{"n"}\NormalTok{, }\DataTypeTok{fill =} \DecValTok{0}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{comparison.cloud}\NormalTok{(}\DataTypeTok{colors =} \KeywordTok{c}\NormalTok{(}\StringTok{"gray20"}\NormalTok{, }\StringTok{"gray80"}\NormalTok{),}
+                   \DataTypeTok{max.words =} \DecValTok{100}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{progressSUN_files/figure-latex/unnamed-chunk-14-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{report1_sentences <-}\StringTok{ }\NormalTok{progress_report_}\DecValTok{2011} \OperatorTok{%>%}\StringTok{ }\KeywordTok{unnest_tokens}\NormalTok{(sentence, text, }\DataTypeTok{token =} \StringTok{"sentences"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
 
 \end{document}
