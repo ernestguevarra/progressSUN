@@ -406,7 +406,8 @@ words}\label{visualise-the-most-common-words}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{report1_sentences <-}\StringTok{ }\NormalTok{progress_report_}\DecValTok{2011} \OperatorTok{%>%}\StringTok{ }\KeywordTok{unnest_tokens}\NormalTok{(sentence, text, }\DataTypeTok{token =} \StringTok{"sentences"}\NormalTok{)}
+\NormalTok{report1_sentences <-}\StringTok{ }\NormalTok{progress_report_}\DecValTok{2011} \OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{unnest_tokens}\NormalTok{(sentence, text, }\DataTypeTok{token =} \StringTok{"sentences"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
